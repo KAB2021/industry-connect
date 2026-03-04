@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     POLL_SOURCE_URL: str = ""
     MAX_UPLOAD_BYTES: int = 10485760  # 10 MB
     TOKEN_THRESHOLD: int = 4000
+    CORS_ALLOWED_ORIGINS: str = "http://localhost:5173"
 
 
 settings = Settings()

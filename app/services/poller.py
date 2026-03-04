@@ -5,6 +5,7 @@ them as OperationalRecord rows with source='poll'.
 """
 import asyncio
 import logging
+from datetime import datetime
 from typing import Any
 
 import httpx
@@ -34,7 +35,7 @@ async def poll_once(session_factory: sessionmaker, client: httpx.AsyncClient) ->
         for item in data:
             record = OperationalRecord(
                 source="poll",
-                timestamp=item["timestamp"],
+                timestamp=datetime.fromisoformat(item["timestamp"]),
                 entity_id=item["entity_id"],
                 metric_name=item["metric_name"],
                 metric_value=float(item["metric_value"]),

@@ -1,0 +1,44 @@
+# Frontend build artifacts
+frontend/node_modules
+frontend/dist
+frontend/.cache
+
+# Git directory
+.git
+
+# Python cache and artifacts
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+.ruff_cache
+*.egg-info
+dist
+build
+
+# Environment files
+.env
+
+# Development and testing
+.venv
+.vscode
+.idea
+.DS_Store
+
+# Documentation and other non-backend files
+docs
+tests
+.github
+
+# Node.js and NPM
+node_modules
+package-lock.json
+yarn.lock
+.npm
+
+# Other
+.gitignore
+README.md
+CHANGELOG.md

@@ -2,11 +2,12 @@
 
 import json
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session, sessionmaker
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.db.session import get_db
+from app.models.analysis_result import AnalysisResult
 from app.models.operational_record import OperationalRecord
 from app.schemas.analysis_result import AnalysisResultRead
 from app.services.analysis import run_analysis
@@ -14,22 +15,25 @@ from app.services.analysis import run_analysis
 router = APIRouter(tags=["analysis"])
 
 
+@router.get("/analyse", response_model=list[AnalysisResultRead])
+def list_analyses(
+    db: Session = Depends(get_db),
+    limit: int = Query(default=100, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
+) -> list[AnalysisResult]:
+    """Return all analysis results, most recent first."""
+    return (
+        db.query(AnalysisResult)
+        .order_by(AnalysisResult.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+
 @router.post("/analyse", response_model=list[AnalysisResultRead])
-def analyse(db: Session = Depends(get_db)) -> list:
-    """Trigger analysis of all unanalysed operational records.
-
-    Returns
-    -------
-    list[AnalysisResultRead]:
-        The persisted analysis results, or an empty list if there are no
-        unanalysed records.
-
-    Raises
-    ------
-    HTTPException(413):
-        If the serialised size of the unanalysed records exceeds
-        ``settings.MAX_UPLOAD_BYTES``.
-    """
+def analyse(db: Session = Depends(get_db)) -> list[AnalysisResult]:
+    """Trigger analysis of all unanalysed operational records."""
     records = (
         db.query(OperationalRecord)
         .filter(OperationalRecord.analysed == False)  # noqa: E712
@@ -60,10 +64,5 @@ def analyse(db: Session = Depends(get_db)) -> list:
             detail="Input data too large for analysis",
         )
 
-    # Create a session factory bound to the same connection as the injected
-    # session.  This ensures that in tests the analysis service operates on
-    # the same test-database connection (and thus sees the seeded data).
-    factory: sessionmaker = sessionmaker(bind=db.get_bind())
-
-    results = run_analysis(factory)
+    results = run_analysis(db)
     return results

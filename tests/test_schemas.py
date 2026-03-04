@@ -141,7 +141,7 @@ class TestAllSchemasImportable:
             id = uuid.uuid4()
             record_ids = [str(uuid.uuid4()), str(uuid.uuid4())]
             summary = "No anomalies detected"
-            anomalies = None
+            anomalies = []
             prompt = "Analyse the following records"
             response_raw = '{"result": "ok"}'
             prompt_tokens = 120
@@ -156,13 +156,13 @@ class TestAllSchemasImportable:
         result_read = AnalysisResultRead(
             id=uuid.uuid4(),
             record_ids=[str(uuid.uuid4())],
-            summary=None,
-            anomalies=None,
-            prompt=None,
-            response_raw=None,
+            summary="Test summary",
+            anomalies=[],
+            prompt="Test prompt",
+            response_raw='{"summary": "Test"}',
             prompt_tokens=None,
             completion_tokens=None,
             created_at=datetime.now(tz=UTC),
         )
         response = AnalysisResponse(result=result_read)
-        assert response.result.summary is None
+        assert response.result.summary == "Test summary"

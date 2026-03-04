@@ -9,11 +9,11 @@ class AnalysisResultRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: uuid.UUID
-    record_ids: list[Any]
-    summary: str | None
-    anomalies: Any
-    prompt: str | None
-    response_raw: str | None
+    record_ids: list[str]
+    summary: str
+    anomalies: list[dict[str, Any]]
+    prompt: str
+    response_raw: str
     prompt_tokens: int | None
     completion_tokens: int | None
     created_at: datetime

@@ -1,0 +1,11 @@
+{
+  "status": "done",
+  "at": "2026-03-04T00:00:00.000Z",
+  "files": [
+    "frontend/src/main.tsx",
+    "frontend/src/hooks/useRecords.ts",
+    "frontend/src/hooks/useUploadCSV.ts",
+    "frontend/src/hooks/useAnalysis.ts"
+  ],
+  "tests": "npx tsc --noEmit passed with no errors; npm run build succeeded producing dist/assets/index-DZ8hqlIc.js (307.15 kB)"
+}

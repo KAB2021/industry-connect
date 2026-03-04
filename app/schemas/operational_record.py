@@ -22,3 +22,8 @@ class WebhookPayload(BaseModel):
     entity_id: str
     metric_name: str
     metric_value: float
+
+
+class CSVUploadResponse(BaseModel):
+    records: list[OperationalRecordRead]
+    mappings_applied: dict[str, str]

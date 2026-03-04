@@ -13,6 +13,7 @@ class OperationalRecord(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         sa.Uuid,
         primary_key=True,
+        default=uuid.uuid4,
         server_default=sa.text("gen_random_uuid()"),
     )
     source: Mapped[str] = mapped_column(sa.String, nullable=False)

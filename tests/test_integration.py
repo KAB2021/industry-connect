@@ -167,16 +167,16 @@ def test_csv_valid_upload_creates_records(client: TestClient) -> None:
     response = _upload_csv(client, VALID_CSV_PATH)
     assert response.status_code == 201
     body = response.json()
-    assert isinstance(body, list)
+    assert isinstance(body["records"], list)
     # valid.csv has 3 data rows
-    assert len(body) == 3
+    assert len(body["records"]) == 3
 
 
 def test_csv_records_have_correct_source_and_analysed(client: TestClient) -> None:
     """CSV-sourced records must have source='csv' and analysed=False."""
     response = _upload_csv(client, VALID_CSV_PATH)
     assert response.status_code == 201
-    for record in response.json():
+    for record in response.json()["records"]:
         assert record["source"] == "csv"
         assert record["analysed"] is False
 
@@ -195,7 +195,7 @@ def test_csv_records_conform_to_schema(client: TestClient) -> None:
         "analysed",
         "ingested_at",
     }
-    for record in response.json():
+    for record in response.json()["records"]:
         assert required_fields.issubset(record.keys())
 
 
@@ -319,7 +319,7 @@ def test_full_lifecycle_all_sources_appear_in_get_records(
     # --- CSV ingestion
     csv_response = _upload_csv(engine_client, VALID_CSV_PATH)
     assert csv_response.status_code == 201
-    assert len(csv_response.json()) == 3  # valid.csv has 3 rows
+    assert len(csv_response.json()["records"]) == 3  # valid.csv has 3 rows
 
     # --- Webhook ingestion
     wh_response = _post_webhook(engine_client)

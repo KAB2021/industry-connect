@@ -2,7 +2,7 @@ from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, text
+from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.config import settings
@@ -12,7 +12,7 @@ from app.main import app
 
 
 @pytest.fixture(scope="session")
-def test_engine():
+def test_engine() -> Generator[Engine, None, None]:
     """Create a SQLAlchemy engine pointing at the test database."""
     engine = create_engine(
         settings.TEST_DATABASE_URL,
@@ -25,34 +25,28 @@ def test_engine():
 
 
 @pytest.fixture(autouse=True)
-def _clean_tables(test_engine: object) -> Generator[None, None, None]:
-    """Truncate all tables before each test for isolation."""
+def _clean_tables(test_engine: Engine) -> Generator[None, None, None]:
+    """Delete all rows after each test for isolation."""
     yield
-    with test_engine.connect() as conn:  # type: ignore[union-attr]
+    with test_engine.connect() as conn:
         conn.execute(text("DELETE FROM analysis_results"))
         conn.execute(text("DELETE FROM operational_records"))
         conn.commit()
 
 
 @pytest.fixture(scope="function")
-def db_session(test_engine) -> Generator[Session, None, None]:
-    """Yield a transactional database session that rolls back after each test."""
-    connection = test_engine.connect()
-    transaction = connection.begin()
-
-    TestSessionLocal: sessionmaker[Session] = sessionmaker(
+def db_session(test_engine: Engine) -> Generator[Session, None, None]:
+    """Yield a database session. Cleanup is handled by _clean_tables."""
+    session_factory: sessionmaker[Session] = sessionmaker(
         autocommit=False,
         autoflush=False,
-        bind=connection,
+        bind=test_engine,
     )
-    session = TestSessionLocal()
-
+    session = session_factory()
     try:
         yield session
     finally:
         session.close()
-        transaction.rollback()
-        connection.close()
 
 
 @pytest.fixture(scope="function")

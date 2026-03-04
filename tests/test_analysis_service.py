@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 import httpx
 import pytest
 import respx
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.models.analysis_result import AnalysisResult
@@ -92,25 +92,6 @@ def make_record(
     return rec
 
 
-def make_session_factory(db_session: Session) -> sessionmaker:
-    """Return a sessionmaker that always yields the given session."""
-    # We need a factory that creates a new session but we want to use
-    # the test transaction. We wrap by providing a factory that returns
-    # the same session object.
-    factory = sessionmaker()
-    factory.configure(bind=db_session.bind)
-    return factory
-
-
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
-
-@pytest.fixture
-def session_factory(db_session: Session) -> sessionmaker:
-    """Session factory that creates sessions on the test connection."""
-    return make_session_factory(db_session)
 
 
 # ---------------------------------------------------------------------------
@@ -215,8 +196,7 @@ def test_run_analysis_empty_returns_empty_list(db_session: Session) -> None:
     """run_analysis should return [] when there are no unanalysed records."""
     from app.services.analysis import run_analysis
 
-    factory = make_session_factory(db_session)
-    result = run_analysis(factory)
+    result = run_analysis(db_session)
     assert result == []
 
 
@@ -228,8 +208,7 @@ def test_run_analysis_all_analysed_is_noop(db_session: Session) -> None:
     make_record(db_session, analysed=True)
     db_session.flush()
 
-    factory = make_session_factory(db_session)
-    result = run_analysis(factory)
+    result = run_analysis(db_session)
     assert result == []
 
 
@@ -250,8 +229,7 @@ def test_run_analysis_single_pass_persists_result(db_session: Session) -> None:
         return_value=httpx.Response(200, json=MOCK_OPENAI_RESPONSE)
     )
 
-    factory = make_session_factory(db_session)
-    results = run_analysis(factory)
+    results = run_analysis(db_session)
 
     assert len(results) == 1
     ar = results[0]
@@ -278,8 +256,7 @@ def test_run_analysis_marks_records_analysed(db_session: Session) -> None:
         return_value=httpx.Response(200, json=MOCK_OPENAI_RESPONSE)
     )
 
-    factory = make_session_factory(db_session)
-    run_analysis(factory)
+    run_analysis(db_session)
 
     # Reload from session
     db_session.expire_all()
@@ -301,8 +278,7 @@ def test_run_analysis_prompt_contains_record_data(db_session: Session) -> None:
         return_value=httpx.Response(200, json=MOCK_OPENAI_RESPONSE)
     )
 
-    factory = make_session_factory(db_session)
-    results = run_analysis(factory)
+    results = run_analysis(db_session)
 
     ar = results[0]
     assert ar.prompt is not None
@@ -325,8 +301,7 @@ def test_run_analysis_response_raw_is_verbatim(db_session: Session) -> None:
         return_value=httpx.Response(200, json=MOCK_OPENAI_RESPONSE)
     )
 
-    factory = make_session_factory(db_session)
-    results = run_analysis(factory)
+    results = run_analysis(db_session)
 
     assert results[0].response_raw == expected_content
 
@@ -343,8 +318,7 @@ def test_run_analysis_token_counts_match_mock(db_session: Session) -> None:
         return_value=httpx.Response(200, json=MOCK_OPENAI_RESPONSE)
     )
 
-    factory = make_session_factory(db_session)
-    results = run_analysis(factory)
+    results = run_analysis(db_session)
 
     ar = results[0]
     assert ar.prompt_tokens == 100
@@ -364,8 +338,7 @@ def test_run_analysis_record_ids_in_result(db_session: Session) -> None:
         return_value=httpx.Response(200, json=MOCK_OPENAI_RESPONSE)
     )
 
-    factory = make_session_factory(db_session)
-    results = run_analysis(factory)
+    results = run_analysis(db_session)
 
     all_record_ids: list[str] = []
     for ar in results:
@@ -398,8 +371,7 @@ def test_run_analysis_sends_json_schema_format(db_session: Session) -> None:
         side_effect=capture_and_respond
     )
 
-    factory = make_session_factory(db_session)
-    run_analysis(factory)
+    run_analysis(db_session)
 
     assert len(captured_requests) >= 1
     body = json.loads(captured_requests[0].content)
@@ -443,8 +415,7 @@ def test_run_analysis_map_reduce_triggers_multiple_calls(
     )
 
     monkeypatch.setattr(settings, "TOKEN_THRESHOLD", 50)
-    factory = make_session_factory(db_session)
-    results = run_analysis(factory)
+    results = run_analysis(db_session)
 
     # Multiple calls = map phase + reduce phase
     assert call_count >= 2
@@ -467,8 +438,7 @@ def test_run_analysis_map_reduce_all_records_marked_analysed(
     )
 
     monkeypatch.setattr(settings, "TOKEN_THRESHOLD", 50)
-    factory = make_session_factory(db_session)
-    run_analysis(factory)
+    run_analysis(db_session)
 
     db_session.expire_all()
     for rec in recs:
@@ -492,8 +462,7 @@ def test_run_analysis_map_reduce_result_has_all_record_ids(
     )
 
     monkeypatch.setattr(settings, "TOKEN_THRESHOLD", 50)
-    factory = make_session_factory(db_session)
-    results = run_analysis(factory)
+    results = run_analysis(db_session)
 
     all_record_ids: list[str] = []
     for ar in results:

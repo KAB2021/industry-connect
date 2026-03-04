@@ -16,11 +16,11 @@ class AnalysisResult(Base):
         primary_key=True,
         server_default=sa.text("gen_random_uuid()"),
     )
-    record_ids: Mapped[list[Any]] = mapped_column(sa.JSON, nullable=False)
-    summary: Mapped[str | None] = mapped_column(sa.Text, nullable=True)
-    anomalies: Mapped[Any | None] = mapped_column(sa.JSON, nullable=True)
-    prompt: Mapped[str | None] = mapped_column(sa.Text, nullable=True)
-    response_raw: Mapped[str | None] = mapped_column(sa.Text, nullable=True)
+    record_ids: Mapped[list[str]] = mapped_column(sa.JSON, nullable=False)
+    summary: Mapped[str] = mapped_column(sa.Text, nullable=False)
+    anomalies: Mapped[list[dict[str, Any]]] = mapped_column(sa.JSON, nullable=False)
+    prompt: Mapped[str] = mapped_column(sa.Text, nullable=False)
+    response_raw: Mapped[str] = mapped_column(sa.Text, nullable=False)
     prompt_tokens: Mapped[int | None] = mapped_column(sa.Integer, nullable=True)
     completion_tokens: Mapped[int | None] = mapped_column(sa.Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(

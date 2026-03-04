@@ -1,7 +1,7 @@
 ---
 id: feat-73dd2524
 title: IndustryConnect
-status: approved
+status: complete
 created: 2026-03-04T00:00:00Z
 ---
 
@@ -23,18 +23,18 @@ The project is self-documenting via FastAPI's built-in `/docs` interface, which 
 
 ## Success Criteria
 
-- [ ] A CSV file posted to the upload endpoint is parsed and each valid row persisted as an `OperationalRecord` with `analysed: false` in PostgreSQL.
-- [ ] Records ingested via any path are retrievable via `GET /records` in the same request cycle without manual intervention.
-- [ ] The background poller fetches from the mock HTTP server on a configurable interval (set via environment variable at startup). After one polling cycle completes — verified by waiting for the configured interval plus a 5-second buffer — at least one `OperationalRecord` with `source: poll` is retrievable via `GET /records`. The mock server's response schema is documented in the project.
-- [ ] All persisted records conform to the `OperationalRecord` schema defined in the Overview, regardless of ingestion path.
-- [ ] The analysis endpoint processes only records where `analysed` is `false`. After a successful analysis call, those records are marked `analysed: true` and are not re-processed by subsequent analysis calls.
-- [ ] Each analysis call persists an `AnalysisResult` row containing: the full rendered prompt string (verbatim), the raw LLM response text, prompt token count, completion token count, a summary string, an anomalies array, and references to the `OperationalRecord` IDs that were included.
-- [ ] When the input to the analysis endpoint exceeds the configurable token threshold, the endpoint splits records into chunks, summarises each chunk individually, and produces a final combined summary from the chunk summaries (map-reduce strategy).
-- [ ] Inputs exceeding the configurable maximum file size (default 10 MB) are rejected with HTTP 413 and a descriptive error message before any LLM call is made.
-- [ ] Posting a CSV with one or more invalid rows returns HTTP 422 with a response body of the shape `{"errors": [{"row": int, "field": str, "message": str}]}`, one entry per invalid row.
-- [ ] Posting a malformed or schema-invalid webhook payload returns HTTP 422 with a response body of the same shape: `{"errors": [{"row": int, "field": str, "message": str}]}`, where `row` is 0 for single-object payloads.
-- [ ] Given a valid `.env` file present at the project root, `docker-compose up` brings the full stack to a ready state with no additional manual steps.
-- [ ] The test suite covers: CSV ingestion (valid and at least one invalid/error path), webhook ingestion (valid and at least one invalid/error path), poll ingestion (at least one cycle producing a persisted record), analysis result persistence (asserting all `AnalysisResult` fields are present and non-null), the `analysed` flag toggle lifecycle, and `GET /records` retrieval.
+- [x] A CSV file posted to the upload endpoint is parsed and each valid row persisted as an `OperationalRecord` with `analysed: false` in PostgreSQL.
+- [x] Records ingested via any path are retrievable via `GET /records` in the same request cycle without manual intervention.
+- [x] The background poller fetches from the mock HTTP server on a configurable interval (set via environment variable at startup). After one polling cycle completes — verified by waiting for the configured interval plus a 5-second buffer — at least one `OperationalRecord` with `source: poll` is retrievable via `GET /records`. The mock server's response schema is documented in the project.
+- [x] All persisted records conform to the `OperationalRecord` schema defined in the Overview, regardless of ingestion path.
+- [x] The analysis endpoint processes only records where `analysed` is `false`. After a successful analysis call, those records are marked `analysed: true` and are not re-processed by subsequent analysis calls.
+- [x] Each analysis call persists an `AnalysisResult` row containing: the full rendered prompt string (verbatim), the raw LLM response text, prompt token count, completion token count, a summary string, an anomalies array, and references to the `OperationalRecord` IDs that were included.
+- [x] When the input to the analysis endpoint exceeds the configurable token threshold, the endpoint splits records into chunks, summarises each chunk individually, and produces a final combined summary from the chunk summaries (map-reduce strategy).
+- [x] Inputs exceeding the configurable maximum file size (default 10 MB) are rejected with HTTP 413 and a descriptive error message before any LLM call is made.
+- [x] Posting a CSV with one or more invalid rows returns HTTP 422 with a response body of the shape `{"errors": [{"row": int, "field": str, "message": str}]}`, one entry per invalid row.
+- [x] Posting a malformed or schema-invalid webhook payload returns HTTP 422 with a response body of the same shape: `{"errors": [{"row": int, "field": str, "message": str}]}`, where `row` is 0 for single-object payloads.
+- [x] Given a valid `.env` file present at the project root, `docker-compose up` brings the full stack to a ready state with no additional manual steps.
+- [x] The test suite covers: CSV ingestion (valid and at least one invalid/error path), webhook ingestion (valid and at least one invalid/error path), poll ingestion (at least one cycle producing a persisted record), analysis result persistence (asserting all `AnalysisResult` fields are present and non-null), the `analysed` flag toggle lifecycle, and `GET /records` retrieval.
 
 ## Scope
 
@@ -62,3 +62,52 @@ The project is self-documenting via FastAPI's built-in `/docs` interface, which 
 - Multiple simultaneous LLM provider selection at runtime (provider is set via environment variable)
 - Runtime-configurable polling interval via API (startup-only configuration is sufficient for portfolio scope)
 - Any frontend or UI beyond `/docs`
+
+## Implementation Notes
+
+### Key Architectural Files and Their Roles
+
+| File | Role |
+|------|------|
+| `app/main.py` | FastAPI application factory, lifespan handler (starts background poller via `asyncio.create_task`), global `RequestValidationError` handler that converts validation errors to the spec's `{"errors": [...]}` format |
+| `app/config.py` | Centralised settings via `pydantic-settings`; reads all configuration from `.env` including `DATABASE_URL`, `OPENAI_API_KEY`, `OPENAI_MODEL`, `POLL_INTERVAL_SECONDS`, `MAX_UPLOAD_BYTES`, and `TOKEN_THRESHOLD` |
+| `app/db/base.py` | Declarative `Base` shared by all ORM models |
+| `app/db/session.py` | `SessionLocal` factory and `get_db` FastAPI dependency; includes explicit rollback on exception |
+| `app/models/operational_record.py` | ORM model for `operational_records` table; Python-side `default=uuid.uuid4` ensures `id` is populated before flush |
+| `app/models/analysis_result.py` | ORM model for `analysis_results` table; `summary`, `anomalies`, `prompt`, and `response_raw` are `NOT NULL` (enforced at DB level via Alembic migration) |
+| `app/routers/ingestion.py` | CSV upload endpoint; enforces `MAX_UPLOAD_BYTES` limit with HTTP 413 and descriptive message; delegates parsing to `csv_parser.py` |
+| `app/routers/webhook.py` | Webhook receiver; Pydantic validation errors are caught by the global handler in `main.py` |
+| `app/routers/records.py` | `GET /records` with `limit` and `offset` query parameters (default 100, max 1000) |
+| `app/routers/analysis.py` | Triggers `run_analysis`; passes the injected `Session` directly (no secondary sessionmaker) |
+| `app/services/csv_parser.py` | Row-level validation; returns `CSVRowError` objects for invalid rows rather than raising |
+| `app/services/analysis.py` | Single-pass and map-reduce analysis logic; `_MAX_REDUCE_ITERATIONS = 5` guards the reduce loop; accepts a `Session` directly |
+| `app/services/chunking.py` | Splits serialised record lists into token-bounded chunks |
+| `app/services/token_counter.py` | Wraps `tiktoken`; encoding is cached with `lru_cache` to avoid repeated model loading |
+| `app/services/poller.py` | Async polling loop; validates external timestamps with `datetime.fromisoformat()` before writing to DB |
+| `alembic/` | Database migrations; includes migration that enforces `NOT NULL` on `AnalysisResult` text fields |
+| `tests/conftest.py` | `DELETE`-based test isolation (single strategy; transaction rollback approach was removed) |
+| `docker-compose.yml` | No hardcoded secrets; database credentials are injected via env var substitution from `.env`; source code volume mount removed |
+| `.env.example` | Documents all required variables including `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` |
+
+### Deviations from Original Spec
+
+**Minor addition beyond stated scope — pagination on `GET /records`:**
+The original spec listed pagination on `GET /records` as explicitly OUT of scope. During review, the absence of a row limit was flagged as a non-blocking concern (returning unbounded result sets is a correctness risk in production). Pagination was added as `limit` (default 100, max 1000) and `offset` query parameters. This is a backwards-compatible, additive change that does not break any existing caller and satisfies the spirit of the unified retrieval requirement. The spec's OUT section is retained as written to reflect the original design intent.
+
+### Post-Review Fixes Summary
+
+The following issues were identified during code review and resolved before the feature was marked complete:
+
+| Issue | Fix Applied |
+|-------|-------------|
+| Webhook 422 response body used FastAPI's default `{"detail": [...]}` format instead of the spec's `{"errors": [...]}` shape | Added global `RequestValidationError` handler in `app/main.py` |
+| CSV 413 response had an empty body | `ingestion.py` now raises `HTTPException(status_code=413, detail=...)` with a descriptive message |
+| `AnalysisResult` fields `summary`, `anomalies`, `prompt`, `response_raw` were `nullable=True` in the DB | Changed to `nullable=False`; covered by an Alembic migration |
+| Analysis router created a secondary `sessionmaker` bound to the injected session | Refactored: `run_analysis` now accepts a `Session` directly |
+| Hardcoded `apppassword` in `docker-compose.yml` | Replaced with env var substitution; `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` added to `.env.example` |
+| Unbounded `while` loop in reduce phase | Replaced with `for _ in range(_MAX_REDUCE_ITERATIONS)` with a convergence guard |
+| Poller wrote unvalidated timestamp strings from the external mock server directly to the ORM | Added `datetime.fromisoformat()` parsing in `poller.py` |
+| `tiktoken.encoding_for_model` called on every token count invocation | Encoding cached with `lru_cache` in `token_counter.py` |
+| `get_db` did not explicitly rollback on exception | Explicit rollback added in `db/session.py` |
+| Dual test isolation (transaction rollback + DELETE cleanup) | Simplified to `DELETE`-only cleanup in `conftest.py` |
+| `OperationalRecord.id` had no Python-side default | Added `default=uuid.uuid4` so `id` is populated before flush |
