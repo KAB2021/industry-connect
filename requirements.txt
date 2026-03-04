@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+alembic
+pydantic-settings
+python-multipart
+httpx
+openai
+tiktoken
+ruff
+mypy
+pytest
+pytest-asyncio
+respx

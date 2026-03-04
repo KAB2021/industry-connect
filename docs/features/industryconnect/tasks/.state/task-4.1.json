@@ -1,0 +1,10 @@
+{
+  "status": "done",
+  "at": "2026-03-04T00:00:00Z",
+  "files": [
+    "tests/fixtures/valid.csv",
+    "tests/fixtures/invalid.csv",
+    "tests/test_integration.py"
+  ],
+  "tests": "93 passed in 1.09s — 20 new integration tests added (test_csv_valid_upload_creates_records, test_csv_records_have_correct_source_and_analysed, test_csv_records_conform_to_schema, test_csv_invalid_returns_422_with_error_shape, test_csv_invalid_returns_422_with_nonzero_row, test_webhook_creates_record, test_webhook_invalid_missing_fields_returns_422_row0, test_webhook_record_appears_in_get_records, test_poller_creates_records_visible_via_get_records, test_poller_records_have_correct_fields, test_full_lifecycle_all_sources_appear_in_get_records, test_full_lifecycle_records_conform_to_schema, test_full_lifecycle_analysed_flag_false_after_ingestion, test_full_lifecycle_analysis_processes_all_records, test_full_lifecycle_analysed_flag_true_after_analysis, test_full_lifecycle_analysis_result_all_fields_present, test_full_lifecycle_analysis_result_persisted_in_db, test_full_lifecycle_second_analysis_skips_already_processed, test_full_lifecycle_analysis_result_record_ids_cover_all_ingested, test_analysis_result_token_counts_match_mock). ruff: All checks passed. mypy: Success, no issues found."
+}

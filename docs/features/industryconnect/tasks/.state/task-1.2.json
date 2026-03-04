@@ -1,0 +1,1 @@
+{"status":"done","at":"2026-03-04T12:00:00Z","files":["app/models/operational_record.py","app/models/analysis_result.py","app/models/__init__.py","alembic/env.py","alembic/versions/8166df027763_initial_models.py"],"tests":"alembic upgrade/downgrade/upgrade cycle: PASS, models importable: PASS"}
