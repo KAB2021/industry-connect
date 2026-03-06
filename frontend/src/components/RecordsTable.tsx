@@ -7,10 +7,10 @@ type SourceFilter = 'all' | 'csv' | 'webhook' | 'poll'
 
 function SortIndicator({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; sortDir: SortDirection }) {
   if (sortKey !== col) {
-    return <span className="ml-1 text-gray-400">&#8597;</span>
+    return <span className="ml-1 text-text-faint">&#8597;</span>
   }
   return (
-    <span className="ml-1 text-blue-600">
+    <span className="ml-1 text-primary-light">
       {sortDir === 'asc' ? '\u2191' : '\u2193'}
     </span>
   )
@@ -61,15 +61,15 @@ export default function RecordsTable({ records }: RecordsTableProps) {
     <div>
       {/* Source filter */}
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-sm font-medium text-gray-600">Source:</span>
+        <span className="text-xs font-medium text-text-muted">Source:</span>
         {sourceOptions.map((opt) => (
           <button
             key={opt.value}
             onClick={() => setSourceFilter(opt.value)}
-            className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+            className={`px-3.5 py-1 rounded-full text-xs font-medium transition-colors border ${
               sourceFilter === opt.value
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-primary-glow text-primary-light border-border-accent'
+                : 'bg-transparent text-text-muted border-border hover:bg-surface hover:text-text-secondary'
             }`}
           >
             {opt.label}
@@ -78,38 +78,38 @@ export default function RecordsTable({ records }: RecordsTableProps) {
       </div>
 
       {processed.length === 0 ? (
-        <div className="rounded-lg bg-gray-50 border border-gray-200 p-10 text-center">
-          <p className="text-gray-500 text-sm">No records found.</p>
+        <div className="rounded-xl bg-surface border border-border p-10 text-center">
+          <p className="text-text-muted text-sm">No records found.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="overflow-x-auto rounded-xl border border-border bg-surface">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-white/[2%]">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th className="px-4 py-3 text-left text-[11px] font-semibold text-text-muted uppercase tracking-wide">
                   Source
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th className="px-4 py-3 text-left text-[11px] font-semibold text-text-muted uppercase tracking-wide">
                   Entity ID
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th className="px-4 py-3 text-left text-[11px] font-semibold text-text-muted uppercase tracking-wide">
                   Metric Name
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th className="px-4 py-3 text-right text-[11px] font-semibold text-text-muted uppercase tracking-wide">
                   Metric Value
                 </th>
                 <th
-                  className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide cursor-pointer select-none hover:text-gray-700"
+                  className="px-4 py-3 text-left text-[11px] font-semibold text-text-muted uppercase tracking-wide cursor-pointer select-none hover:text-text-secondary"
                   onClick={() => handleSort('timestamp')}
                 >
                   Timestamp
                   <SortIndicator col="timestamp" sortKey={sortKey} sortDir={sortDir} />
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th className="px-4 py-3 text-center text-[11px] font-semibold text-text-muted uppercase tracking-wide">
                   Analysed
                 </th>
                 <th
-                  className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide cursor-pointer select-none hover:text-gray-700"
+                  className="px-4 py-3 text-left text-[11px] font-semibold text-text-muted uppercase tracking-wide cursor-pointer select-none hover:text-text-secondary"
                   onClick={() => handleSort('ingested_at')}
                 >
                   Ingested At
@@ -117,39 +117,39 @@ export default function RecordsTable({ records }: RecordsTableProps) {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
+            <tbody className="divide-y divide-border-light">
               {processed.map((record, idx) => (
                 <tr
                   key={record.id}
-                  className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                  className={`${idx % 2 === 0 ? 'bg-transparent' : 'bg-white/[2%]'} hover:bg-white/[2%]`}
                 >
-                  <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                  <td className="px-4 py-3 text-[13px] text-text-secondary whitespace-nowrap">
                     {record.source}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap font-mono">
+                  <td className="px-4 py-3 text-xs text-text-muted whitespace-nowrap font-mono">
                     {record.entity_id}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                  <td className="px-4 py-3 text-[13px] text-text-secondary whitespace-nowrap">
                     {record.metric_name}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-900 text-right whitespace-nowrap font-medium">
+                  <td className="px-4 py-3 text-[13px] text-text-primary text-right whitespace-nowrap font-semibold">
                     {record.metric_value.toLocaleString()}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                  <td className="px-4 py-3 text-[13px] text-text-secondary whitespace-nowrap">
                     {new Date(record.timestamp).toLocaleString()}
                   </td>
                   <td className="px-4 py-3 text-center whitespace-nowrap">
                     {record.analysed ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Yes
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-success-bg text-success border border-success-border">
+                        Analysed
                       </span>
                     ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-warning-bg text-warning border border-warning-border">
                         Pending
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                  <td className="px-4 py-3 text-[13px] text-text-secondary whitespace-nowrap">
                     {new Date(record.ingested_at).toLocaleString()}
                   </td>
                 </tr>

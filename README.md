@@ -2,6 +2,20 @@
 
 A full-stack application for ingesting operational data through multiple channels, storing it in PostgreSQL, and using OpenAI to produce plain-English summaries and anomaly detection. The React frontend provides a browser-based interface for all backend capabilities.
 
+## Screenshots
+
+### Dashboard
+![Dashboard](docs/screenshots/dashboard.png)
+
+### Records
+![Records](docs/screenshots/records.png)
+
+### Upload
+![Upload](docs/screenshots/upload.png)
+
+### Analysis
+![Analysis](docs/screenshots/analysis.png)
+
 ## What It Does
 
 IndustryConnect accepts data from three ingestion paths — CSV file upload, webhook, and a background poller — normalises every record into a consistent schema, and stores it in PostgreSQL. An analysis endpoint sends unprocessed records to an LLM (GPT-4o-mini by default) and returns summaries with flagged anomalies. For large inputs, it automatically splits records into chunks and uses a map-reduce strategy to stay within token limits.
@@ -292,6 +306,10 @@ GitHub Actions runs on every push and PR to `main`:
 3. Lints with ruff
 4. Type checks with mypy
 5. Runs the full test suite
+
+## Design
+
+The UI uses a **Midnight Neon** dark glassmorphism theme with a deep navy background (`#080C14`), cyan-to-emerald gradient accents, frosted glass cards, and a fixed icon sidebar. Design tokens are defined via Tailwind CSS v4 `@theme` in `frontend/src/index.css`.
 
 ## Design Decisions
 

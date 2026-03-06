@@ -6,15 +6,25 @@ interface StatCardProps {
   label: string
   value: string | number
   description?: string
+  accent?: boolean
 }
 
-function StatCard({ label, value, description }: StatCardProps) {
+function StatCard({ label, value, description, accent }: StatCardProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-      <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">{label}</p>
-      <p className="mt-2 text-3xl font-bold text-gray-900">{value}</p>
+    <div
+      className={[
+        'rounded-xl border backdrop-blur-md p-6 transition-colors',
+        accent
+          ? 'bg-linear-135/srgb from-primary-glow to-[rgba(16,185,129,0.08)] border-border-accent'
+          : 'bg-surface border-border hover:border-border-hover',
+      ].join(' ')}
+    >
+      <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wide">{label}</p>
+      <p className={`mt-2 text-3xl font-extrabold tracking-tight ${accent ? 'text-primary-light' : 'text-text-primary'}`}>
+        {value}
+      </p>
       {description && (
-        <p className="mt-1 text-sm text-gray-500">{description}</p>
+        <p className="mt-1 text-xs text-text-faint">{description}</p>
       )}
     </div>
   )
@@ -28,16 +38,16 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-48">
-        <p className="text-gray-500 text-sm">Loading dashboard...</p>
+        <p className="text-text-muted text-sm">Loading dashboard...</p>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="rounded-lg bg-red-50 border border-red-200 p-4">
-        <p className="text-sm font-medium text-red-800">Failed to load records</p>
-        <p className="mt-1 text-sm text-red-600">{error.message}</p>
+      <div className="rounded-lg bg-danger-bg border border-danger-border p-4">
+        <p className="text-sm font-medium text-danger">Failed to load records</p>
+        <p className="mt-1 text-sm text-danger">{error.message}</p>
       </div>
     )
   }
@@ -47,16 +57,17 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-      <p className="mt-1 text-sm text-gray-500">
+      <h1 className="text-[22px] font-bold text-text-primary tracking-tight">Dashboard</h1>
+      <p className="mt-1 text-[13.5px] text-text-muted">
         Summary of the current session's operational records and analysis activity.
       </p>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           label="Total Records Loaded"
           value={totalRecords}
           description="Records in the current page"
+          accent
         />
         <StatCard
           label="Pending Analysis"
@@ -71,18 +82,18 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-8">
-        <h2 className="text-lg font-semibold text-gray-900">Most Recent Analysis Result</h2>
+        <h2 className="text-[15px] font-semibold text-text-primary mb-3.5">Most Recent Analysis Result</h2>
         {analysisError ? (
-          <div className="mt-3 rounded-lg bg-red-50 border border-red-200 p-5">
-            <p className="text-sm text-red-600">Failed to load analysis results</p>
+          <div className="rounded-lg bg-danger-bg border border-danger-border p-5">
+            <p className="text-sm text-danger">Failed to load analysis results</p>
           </div>
         ) : latestResult ? (
-          <div className="mt-3">
+          <div>
             <AnalysisResultCard result={latestResult} index={0} />
           </div>
         ) : (
-          <div className="mt-3 rounded-lg bg-gray-50 border border-gray-200 p-5">
-            <p className="text-sm text-gray-500">No analysis run yet.</p>
+          <div className="rounded-xl bg-surface border border-border p-5">
+            <p className="text-sm text-text-muted">No analysis run yet.</p>
           </div>
         )}
       </div>

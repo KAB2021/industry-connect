@@ -1,1 +1,52 @@
 @import "tailwindcss";
+
+/* Midnight Neon Design Tokens
+   NOTE: Tokens with pre-baked alpha (surface, border, etc.) should NOT
+   have Tailwind opacity modifiers stacked on them — color-mix compounds. */
+@theme {
+  --color-bg: #080C14;
+  --color-surface: rgba(255, 255, 255, 0.03);
+  --color-surface-hover: rgba(255, 255, 255, 0.05);
+  --color-surface-raised: rgba(255, 255, 255, 0.06);
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-light: rgba(255, 255, 255, 0.04);
+  --color-border-hover: rgba(255, 255, 255, 0.1);
+  --color-border-accent: rgba(6, 182, 212, 0.2);
+
+  --color-primary: #06B6D4;
+  --color-primary-light: #22D3EE;
+  --color-primary-glow: rgba(6, 182, 212, 0.15);
+  --color-secondary: #10B981;
+
+  --color-text-primary: #F4F4F5;
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted: #71717A;
+  --color-text-faint: #52525B;
+
+  --color-sidebar-active: rgba(6, 182, 212, 0.12);
+
+  --color-success: #10B981;
+  --color-success-bg: rgba(16, 185, 129, 0.1);
+  --color-success-border: rgba(16, 185, 129, 0.2);
+  --color-warning: #F59E0B;
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-warning-border: rgba(245, 158, 11, 0.2);
+  --color-danger: #EF4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.1);
+  --color-danger-border: rgba(239, 68, 68, 0.2);
+
+  --shadow-glow: 0 0 16px rgba(6, 182, 212, 0.15);
+  --shadow-glow-hover: 0 0 24px rgba(6, 182, 212, 0.25);
+}
+
+html {
+  background-color: #080C14;
+}
+
+.ambient-glow {
+  background-color: #080C14;
+  background-image:
+    radial-gradient(ellipse at 15% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 15%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+  background-attachment: fixed;
+}

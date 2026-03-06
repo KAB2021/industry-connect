@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IndustryConnect - Modern Design Directions</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #09090B; color: #fff; padding: 40px; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .subtitle { color: #71717A; font-size: 15px; margin-bottom: 48px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .direction { border-radius: 16px; overflow: hidden; border: 1px solid #27272A; transition: border-color 0.3s; }
+  .direction:hover { border-color: #52525B; }
+  .direction-header { padding: 24px; background: #18181B; }
+  .direction-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .direction-header p { color: #71717A; font-size: 13px; line-height: 1.5; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px; margin-bottom: 12px; }
+  .ref { font-size: 11px; color: #52525B; margin-top: 10px; line-height: 1.6; }
+  .ref strong { color: #A1A1AA; }
+
+  /* Swatches */
+  .swatches { display: flex; gap: 6px; padding: 18px 24px; background: #18181B; border-top: 1px solid #27272A; }
+  .swatch { flex: 1; text-align: center; }
+  .swatch-color { width: 100%; height: 36px; border-radius: 8px; margin-bottom: 5px; }
+  .swatch-label { font-size: 9px; color: #71717A; text-transform: uppercase; letter-spacing: 0.5px; }
+  .swatch-hex { font-size: 10px; color: #52525B; font-family: monospace; }
+
+  /* Mini dashboard preview */
+  .preview { height: 460px; position: relative; overflow: hidden; }
+
+  /* Shared preview elements */
+  .p-sidebar { width: 52px; display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 6px; flex-shrink: 0; }
+  .p-sidebar-logo { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; margin-bottom: 10px; }
+  .p-sidebar-item { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .p-main { flex: 1; padding: 20px; overflow: hidden; }
+  .p-title { font-size: 17px; font-weight: 700; margin-bottom: 3px; }
+  .p-sub { font-size: 11px; margin-bottom: 16px; }
+  .p-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .p-card { padding: 14px; border-radius: 12px; }
+  .p-card-val { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+  .p-card-label { font-size: 10px; font-weight: 500; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .p-section { font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+  .p-result { padding: 14px; border-radius: 10px; }
+  .p-result-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-bottom: 6px; }
+  .p-result-title { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+  .p-result-text { font-size: 10.5px; line-height: 1.5; }
+
+  /* ============ A: Dark Glass ============ */
+  .dir-a .tag { background: rgba(139,92,246,0.15); color: #A78BFA; }
+  .dir-a .preview {
+    background: #0C0A1A;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(139,92,246,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(59,130,246,0.08) 0%, transparent 50%);
+    display: flex;
+  }
+  .dir-a .p-sidebar { background: rgba(255,255,255,0.03); border-right: 1px solid rgba(255,255,255,0.06); }
+  .dir-a .p-sidebar-logo { background: linear-gradient(135deg, #8B5CF6, #6366F1); color: #fff; }
+  .dir-a .p-sidebar-item { color: #52525B; }
+  .dir-a .p-sidebar-item.active { background: rgba(139,92,246,0.15); color: #A78BFA; }
+  .dir-a .p-title { color: #FAFAFA; }
+  .dir-a .p-sub { color: #52525B; }
+  .dir-a .p-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+  }
+  .dir-a .p-card:first-child {
+    background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(99,102,241,0.15));
+    border: 1px solid rgba(139,92,246,0.25);
+  }
+  .dir-a .p-card-val { color: #F4F4F5; }
+  .dir-a .p-card:first-child .p-card-val { color: #C4B5FD; }
+  .dir-a .p-card-label { color: #52525B; }
+  .dir-a .p-section { color: #A1A1AA; }
+  .dir-a .p-result {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .dir-a .p-result-badge { background: rgba(234,179,8,0.15); color: #FACC15; }
+  .dir-a .p-result-title { color: #E4E4E7; }
+  .dir-a .p-result-text { color: #52525B; }
+
+  /* ============ B: Midnight Neon ============ */
+  .dir-b .tag { background: rgba(34,211,238,0.12); color: #22D3EE; }
+  .dir-b .preview {
+    background: #0A0F1A;
+    background-image:
+      radial-gradient(ellipse at 70% 80%, rgba(6,182,212,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 30% 10%, rgba(16,185,129,0.06) 0%, transparent 50%);
+    display: flex;
+  }
+  .dir-b .p-sidebar { background: rgba(255,255,255,0.02); border-right: 1px solid rgba(255,255,255,0.05); }
+  .dir-b .p-sidebar-logo { background: linear-gradient(135deg, #06B6D4, #10B981); color: #fff; }
+  .dir-b .p-sidebar-item { color: #3F3F46; }
+  .dir-b .p-sidebar-item.active { background: rgba(6,182,212,0.12); color: #22D3EE; }
+  .dir-b .p-title { color: #FAFAFA; }
+  .dir-b .p-sub { color: #52525B; }
+  .dir-b .p-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .dir-b .p-card:first-child {
+    background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(16,185,129,0.1));
+    border: 1px solid rgba(6,182,212,0.2);
+  }
+  .dir-b .p-card-val { color: #F4F4F5; }
+  .dir-b .p-card:first-child .p-card-val { color: #67E8F9; }
+  .dir-b .p-card-label { color: #52525B; }
+  .dir-b .p-section { color: #A1A1AA; }
+  .dir-b .p-result {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .dir-b .p-result-badge { background: rgba(251,146,60,0.15); color: #FB923C; }
+  .dir-b .p-result-title { color: #E4E4E7; }
+  .dir-b .p-result-text { color: #52525B; }
+
+  /* ============ C: Charcoal Ember ============ */
+  .dir-c .tag { background: rgba(249,115,22,0.12); color: #FB923C; }
+  .dir-c .preview {
+    background: #111113;
+    background-image:
+      radial-gradient(ellipse at 60% 90%, rgba(249,115,22,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 30%, rgba(244,63,94,0.05) 0%, transparent 50%);
+    display: flex;
+  }
+  .dir-c .p-sidebar { background: rgba(255,255,255,0.02); border-right: 1px solid rgba(255,255,255,0.05); }
+  .dir-c .p-sidebar-logo { background: linear-gradient(135deg, #F97316, #EF4444); color: #fff; }
+  .dir-c .p-sidebar-item { color: #3F3F46; }
+  .dir-c .p-sidebar-item.active { background: rgba(249,115,22,0.12); color: #FB923C; }
+  .dir-c .p-title { color: #FAFAFA; }
+  .dir-c .p-sub { color: #52525B; }
+  .dir-c .p-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .dir-c .p-card:first-child {
+    background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(239,68,68,0.1));
+    border: 1px solid rgba(249,115,22,0.2);
+  }
+  .dir-c .p-card-val { color: #F4F4F5; }
+  .dir-c .p-card:first-child .p-card-val { color: #FDBA74; }
+  .dir-c .p-card-label { color: #52525B; }
+  .dir-c .p-section { color: #A1A1AA; }
+  .dir-c .p-result {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .dir-c .p-result-badge { background: rgba(16,185,129,0.12); color: #34D399; }
+  .dir-c .p-result-title { color: #E4E4E7; }
+  .dir-c .p-result-text { color: #52525B; }
+
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+  <h1>IndustryConnect Redesign v2</h1>
+  <p class="subtitle">Three modern dark directions inspired by Figma community trends. All feature dark glassmorphism, sidebar nav, and ambient glow.</p>
+
+  <div class="grid">
+    <!-- ====== Direction A: Dark Glass ====== -->
+    <div class="direction dir-a">
+      <div class="direction-header">
+        <span class="tag">A</span>
+        <h2>Dark Glass</h2>
+        <p>Violet/indigo glassmorphism. Ambient purple glow, frosted cards, moody depth. Apple Liquid Glass energy.</p>
+        <div class="ref"><strong>Inspired by:</strong> Glassmorphism Dashboard UI Kit, Notion Dark Aesthetic Kit, Dark Finance Dashboard</div>
+      </div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:linear-gradient(135deg,#8B5CF6,#6366F1)"></div>
+          <div class="swatch-label">Primary</div>
+          <div class="swatch-hex">#8B5CF6</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#A78BFA"></div>
+          <div class="swatch-label">Accent</div>
+          <div class="swatch-hex">#A78BFA</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0C0A1A"></div>
+          <div class="swatch-label">Base</div>
+          <div class="swatch-hex">#0C0A1A</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)"></div>
+          <div class="swatch-label">Glass</div>
+          <div class="swatch-hex">4% white</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FAFAFA"></div>
+          <div class="swatch-label">Text</div>
+          <div class="swatch-hex">#FAFAFA</div>
+        </div>
+      </div>
+      <div class="preview">
+        <div class="p-sidebar">
+          <div class="p-sidebar-logo">IC</div>
+          <div class="p-sidebar-item active">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <div class="p-sidebar-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg>
+          </div>
+          <div class="p-sidebar-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          </div>
+          <div class="p-sidebar-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6m6 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0h6m4 0v-4a2 2 0 00-2-2h-2a2 2 0 00-2 2v4"/></svg>
+          </div>
+        </div>
+        <div class="p-main">
+          <div class="p-title">Dashboard</div>
+          <div class="p-sub">Overview of operational records and analysis.</div>
+          <div class="p-cards">
+            <div class="p-card"><div class="p-card-val">1,247</div><div class="p-card-label">Total Records</div></div>
+            <div class="p-card"><div class="p-card-val">38</div><div class="p-card-label">Pending</div></div>
+            <div class="p-card"><div class="p-card-val">1,209</div><div class="p-card-label">Analysed</div></div>
+          </div>
+          <div class="p-section">Latest Analysis</div>
+          <div class="p-result">
+            <span class="p-result-badge">3 Anomalies</span>
+            <div class="p-result-title">Anomaly Detection Run #12</div>
+            <div class="p-result-text">3 anomalies detected across 156 records. Temperature and pressure deviations in Sector B.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== Direction B: Midnight Neon ====== -->
+    <div class="direction dir-b">
+      <div class="direction-header">
+        <span class="tag">B</span>
+        <h2>Midnight Neon</h2>
+        <p>Cyan/emerald gradient accents. Deep navy base with subtle teal glow. Clean, data-focused, sci-fi edge.</p>
+        <div class="ref"><strong>Inspired by:</strong> Operations Dashboard Dark Mode, Multiple Dark Dashboards, Data Dashboard Bento UI</div>
+      </div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:linear-gradient(135deg,#06B6D4,#10B981)"></div>
+          <div class="swatch-label">Primary</div>
+          <div class="swatch-hex">#06B6D4</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#22D3EE"></div>
+          <div class="swatch-label">Accent</div>
+          <div class="swatch-hex">#22D3EE</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0A0F1A"></div>
+          <div class="swatch-label">Base</div>
+          <div class="swatch-hex">#0A0F1A</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)"></div>
+          <div class="swatch-label">Glass</div>
+          <div class="swatch-hex">3% white</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FAFAFA"></div>
+          <div class="swatch-label">Text</div>
+          <div class="swatch-hex">#FAFAFA</div>
+        </div>
+      </div>
+      <div class="preview">
+        <div class="p-sidebar">
+          <div class="p-sidebar-logo">IC</div>
+          <div class="p-sidebar-item active">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <div class="p-sidebar-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg>
+          </div>
+          <div class="p-sidebar-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          </div>
+          <div class="p-sidebar-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6m6 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0h6m4 0v-4a2 2 0 00-2-2h-2a2 2 0 00-2 2v4"/></svg>
+          </div>
+        </div>
+        <div class="p-main">
+          <div class="p-title">Dashboard</div>
+          <div class="p-sub">Overview of operational records and analysis.</div>
+          <div class="p-cards">
+            <div class="p-card"><div class="p-card-val">1,247</div><div class="p-card-label">Total Records</div></div>
+            <div class="p-card"><div class="p-card-val">38</div><div class="p-card-label">Pending</div></div>
+            <div class="p-card"><div class="p-card-val">1,209</div><div class="p-card-label">Analysed</div></div>
+          </div>
+          <div class="p-section">Latest Analysis</div>
+          <div class="p-result">
+            <span class="p-result-badge">3 Anomalies</span>
+            <div class="p-result-title">Anomaly Detection Run #12</div>
+            <div class="p-result-text">3 anomalies detected across 156 records. Temperature and pressure deviations in Sector B.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== Direction C: Charcoal Ember ====== -->
+    <div class="direction dir-c">
+      <div class="direction-header">
+        <span class="tag">C</span>
+        <h2>Charcoal Ember</h2>
+        <p>Orange/red warm accents on neutral charcoal. Warm dark mode, less techy, more refined. Vercel-meets-Linear.</p>
+        <div class="ref"><strong>Inspired by:</strong> DarkMode Dashboard Design, Minimall Dashboard, Dashboard Light/Dark Version</div>
+      </div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-color" style="background:linear-gradient(135deg,#F97316,#EF4444)"></div>
+          <div class="swatch-label">Primary</div>
+          <div class="swatch-hex">#F97316</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FB923C"></div>
+          <div class="swatch-label">Accent</div>
+          <div class="swatch-hex">#FB923C</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#111113"></div>
+          <div class="swatch-label">Base</div>
+          <div class="swatch-hex">#111113</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)"></div>
+          <div class="swatch-label">Glass</div>
+          <div class="swatch-hex">3% white</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#FAFAFA"></div>
+          <div class="swatch-label">Text</div>
+          <div class="swatch-hex">#FAFAFA</div>
+        </div>
+      </div>
+      <div class="preview">
+        <div class="p-sidebar">
+          <div class="p-sidebar-logo">IC</div>
+          <div class="p-sidebar-item active">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <div class="p-sidebar-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg>
+          </div>
+          <div class="p-sidebar-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          </div>
+          <div class="p-sidebar-item">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6m6 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0h6m4 0v-4a2 2 0 00-2-2h-2a2 2 0 00-2 2v4"/></svg>
+          </div>
+        </div>
+        <div class="p-main">
+          <div class="p-title">Dashboard</div>
+          <div class="p-sub">Overview of operational records and analysis.</div>
+          <div class="p-cards">
+            <div class="p-card"><div class="p-card-val">1,247</div><div class="p-card-label">Total Records</div></div>
+            <div class="p-card"><div class="p-card-val">38</div><div class="p-card-label">Pending</div></div>
+            <div class="p-card"><div class="p-card-val">1,209</div><div class="p-card-label">Analysed</div></div>
+          </div>
+          <div class="p-section">Latest Analysis</div>
+          <div class="p-result">
+            <span class="p-result-badge">Completed</span>
+            <div class="p-result-title">Anomaly Detection Run #12</div>
+            <div class="p-result-text">3 anomalies detected across 156 records. Temperature and pressure deviations in Sector B.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:48px; padding:24px; border-top:1px solid #27272A;">
+    <p style="color:#52525B; font-size:13px;">Figma community references:
+      <a href="https://www.figma.com/community/file/1514405085901665002" style="color:#71717A" target="_blank">Glassmorphism Kit</a> &middot;
+      <a href="https://www.figma.com/community/file/1354429309780258770" style="color:#71717A" target="_blank">Dark Dashboards</a> &middot;
+      <a href="https://www.figma.com/community/file/1506487400738812731" style="color:#71717A" target="_blank">Operations Dark</a> &middot;
+      <a href="https://www.figma.com/community/file/1320413003375217236" style="color:#71717A" target="_blank">Bento Glass UI</a> &middot;
+      <a href="https://www.figma.com/community/file/1577755822457692104" style="color:#71717A" target="_blank">Notion Kit</a>
+    </p>
+  </div>
+</body>
+</html>

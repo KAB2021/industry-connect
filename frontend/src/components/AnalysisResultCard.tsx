@@ -7,17 +7,17 @@ interface AnomalyRowProps {
 
 function AnomalyRow({ anomaly }: AnomalyRowProps) {
   return (
-    <li className="border border-yellow-200 rounded-md p-3 bg-yellow-50">
+    <li className="border border-warning-border rounded-lg p-3.5 bg-warning-bg">
       <div className="flex flex-wrap gap-2 items-center mb-1">
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-[rgba(245,158,11,0.2)] text-warning">
           {anomaly.metric_name}
         </span>
-        <span className="text-xs text-gray-500">Record: {anomaly.record_id}</span>
-        <span className="ml-auto text-sm font-semibold text-yellow-900">
+        <span className="text-[11px] text-text-faint">Record: {anomaly.record_id}</span>
+        <span className="ml-auto text-[13px] font-bold text-warning">
           {anomaly.metric_value}
         </span>
       </div>
-      <p className="text-sm text-gray-700">{anomaly.explanation}</p>
+      <p className="text-[12.5px] text-text-secondary leading-relaxed">{anomaly.explanation}</p>
     </li>
   )
 }
@@ -34,17 +34,17 @@ function RecordIdsList({ recordIds }: RecordIdsListProps) {
 
   return (
     <div>
-      <ul className="space-y-1">
+      <div className="flex flex-wrap gap-1.5">
         {visibleIds.map((id) => (
-          <li key={id} className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-0.5 rounded">
+          <span key={id} className="text-[10px] text-text-faint font-mono bg-surface border border-border px-2 py-0.5 rounded">
             {id}
-          </li>
+          </span>
         ))}
-      </ul>
+      </div>
       {shouldCollapse && (
         <button
           onClick={() => setExpanded((prev) => !prev)}
-          className="mt-2 text-xs text-blue-600 hover:text-blue-800 font-medium focus:outline-none"
+          className="mt-2 text-xs text-primary-light hover:text-primary font-medium focus:outline-none"
         >
           {expanded
             ? 'Show less'
@@ -64,54 +64,56 @@ export function AnalysisResultCard({ result, index }: AnalysisResultCardProps) {
   const formattedDate = new Date(result.created_at).toLocaleString()
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-5">
+    <div className="bg-surface rounded-xl border border-border backdrop-blur-md transition-colors hover:border-border-hover overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h3 className="text-sm font-semibold text-gray-700">
+      <div className="flex items-center justify-between flex-wrap gap-2 px-6 py-4 border-b border-border-light">
+        <h3 className="text-sm font-semibold text-text-primary">
           Analysis #{index + 1}
         </h3>
-        <span className="text-xs text-gray-400">{formattedDate}</span>
+        <span className="text-[11px] text-text-faint">{formattedDate}</span>
       </div>
 
-      {/* Summary */}
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Summary</p>
-        <p className="text-sm text-gray-800 leading-relaxed">{result.summary}</p>
-      </div>
-
-      {/* Anomalies */}
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Anomalies</p>
-        {result.anomalies.length === 0 ? (
-          <p className="text-sm text-gray-500 italic">No anomalies detected</p>
-        ) : (
-          <ul className="space-y-2">
-            {result.anomalies.map((anomaly, i) => (
-              <AnomalyRow key={`${anomaly.record_id}-${anomaly.metric_name}-${i}`} anomaly={anomaly} />
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {/* Token Usage */}
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Token Usage</p>
-        <div className="flex gap-3 flex-wrap">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-            Prompt: {result.prompt_tokens !== null ? result.prompt_tokens.toLocaleString() : 'N/A'}
-          </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">
-            Completion: {result.completion_tokens !== null ? result.completion_tokens.toLocaleString() : 'N/A'}
-          </span>
+      <div className="px-6 py-5 space-y-5">
+        {/* Summary */}
+        <div>
+          <p className="text-[10px] font-semibold text-text-muted uppercase tracking-wider mb-2">Summary</p>
+          <p className="text-[13.5px] text-text-secondary leading-relaxed">{result.summary}</p>
         </div>
-      </div>
 
-      {/* Record IDs */}
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-          Records ({result.record_ids.length})
-        </p>
-        <RecordIdsList recordIds={result.record_ids} />
+        {/* Anomalies */}
+        <div>
+          <p className="text-[10px] font-semibold text-text-muted uppercase tracking-wider mb-2">Anomalies</p>
+          {result.anomalies.length === 0 ? (
+            <p className="text-[13px] text-text-faint italic">No anomalies detected</p>
+          ) : (
+            <ul className="space-y-2">
+              {result.anomalies.map((anomaly, i) => (
+                <AnomalyRow key={`${anomaly.record_id}-${anomaly.metric_name}-${i}`} anomaly={anomaly} />
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* Token Usage */}
+        <div>
+          <p className="text-[10px] font-semibold text-text-muted uppercase tracking-wider mb-2">Token Usage</p>
+          <div className="flex gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-primary-glow text-primary-light border border-border-accent">
+              Prompt: {result.prompt_tokens !== null ? result.prompt_tokens.toLocaleString() : 'N/A'}
+            </span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-surface text-text-muted border border-border">
+              Completion: {result.completion_tokens !== null ? result.completion_tokens.toLocaleString() : 'N/A'}
+            </span>
+          </div>
+        </div>
+
+        {/* Record IDs */}
+        <div>
+          <p className="text-[10px] font-semibold text-text-muted uppercase tracking-wider mb-2">
+            Records ({result.record_ids.length})
+          </p>
+          <RecordIdsList recordIds={result.record_ids} />
+        </div>
       </div>
     </div>
   )

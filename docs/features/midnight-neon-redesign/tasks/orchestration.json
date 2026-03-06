@@ -1,0 +1,55 @@
+{
+  "feature": "midnight-neon-redesign",
+  "created": "2026-03-05T00:00:00Z",
+  "tasks": {
+    "task-1.1": {
+      "file": "task-1.1.md",
+      "complexity": "medium",
+      "method": "write-test",
+      "blocked_by": [],
+      "blocks": ["task-2.1", "task-3.1", "task-3.2", "task-3.3", "task-3.4"]
+    },
+    "task-2.1": {
+      "file": "task-2.1.md",
+      "complexity": "high",
+      "method": "refactor",
+      "blocked_by": ["task-1.1"],
+      "blocks": ["task-3.1", "task-3.2", "task-3.3", "task-3.4"]
+    },
+    "task-3.1": {
+      "file": "task-3.1.md",
+      "complexity": "medium",
+      "method": "refactor",
+      "blocked_by": ["task-2.1"],
+      "blocks": []
+    },
+    "task-3.2": {
+      "file": "task-3.2.md",
+      "complexity": "high",
+      "method": "refactor",
+      "blocked_by": ["task-2.1"],
+      "blocks": []
+    },
+    "task-3.3": {
+      "file": "task-3.3.md",
+      "complexity": "medium",
+      "method": "refactor",
+      "blocked_by": ["task-2.1"],
+      "blocks": []
+    },
+    "task-3.4": {
+      "file": "task-3.4.md",
+      "complexity": "high",
+      "method": "refactor",
+      "blocked_by": ["task-2.1"],
+      "blocks": []
+    }
+  },
+  "batches": [
+    ["task-1.1"],
+    ["task-2.1"],
+    ["task-3.1", "task-3.2", "task-3.3", "task-3.4"]
+  ],
+  "current_batch": 2,
+  "status": "completed"
+}

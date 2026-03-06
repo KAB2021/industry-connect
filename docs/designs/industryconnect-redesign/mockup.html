@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IndustryConnect - Midnight Neon Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ========== RESET ========== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+
+/* ========== TOKENS ========== */
+:root{
+  --bg:#080C14;
+  --bg-ambient:radial-gradient(ellipse at 15% 80%,rgba(6,182,212,0.06) 0%,transparent 55%),radial-gradient(ellipse at 85% 15%,rgba(16,185,129,0.04) 0%,transparent 50%);
+  --surface:rgba(255,255,255,0.03);
+  --surface-hover:rgba(255,255,255,0.05);
+  --surface-raised:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.06);
+  --border-light:rgba(255,255,255,0.04);
+  --border-accent:rgba(6,182,212,0.2);
+  --primary:#06B6D4;
+  --primary-light:#22D3EE;
+  --primary-glow:rgba(6,182,212,0.15);
+  --secondary:#10B981;
+  --accent-gradient:linear-gradient(135deg,#06B6D4,#10B981);
+  --text:#F4F4F5;
+  --text-secondary:#A1A1AA;
+  --text-muted:#71717A;
+  --text-faint:#52525B;
+  --danger:#EF4444;
+  --danger-bg:rgba(239,68,68,0.1);
+  --danger-border:rgba(239,68,68,0.2);
+  --warning:#F59E0B;
+  --warning-bg:rgba(245,158,11,0.1);
+  --warning-border:rgba(245,158,11,0.2);
+  --success:#10B981;
+  --success-bg:rgba(16,185,129,0.1);
+  --success-border:rgba(16,185,129,0.2);
+  --radius:12px;
+  --radius-sm:8px;
+  --sidebar-w:60px;
+}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  background-image:var(--bg-ambient);
+  background-attachment:fixed;
+  color:var(--text);
+  line-height:1.5;
+  min-height:100vh;
+}
+
+/* ========== LAYOUT SHELL ========== */
+.shell{display:flex;min-height:100vh;}
+
+/* ========== SIDEBAR ========== */
+.sidebar{
+  width:var(--sidebar-w);
+  background:rgba(255,255,255,0.02);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:16px 0;
+  position:fixed;
+  top:0;left:0;bottom:0;
+  z-index:50;
+}
+.sidebar-logo{
+  width:34px;height:34px;
+  border-radius:10px;
+  background:var(--accent-gradient);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:12px;font-weight:800;
+  margin-bottom:24px;
+  box-shadow:0 0 20px rgba(6,182,212,0.2);
+}
+.sidebar-nav{display:flex;flex-direction:column;gap:6px;flex:1;}
+.sidebar-item{
+  width:36px;height:36px;
+  border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-faint);
+  cursor:pointer;
+  transition:all 0.15s ease;
+  border:none;background:none;
+  position:relative;
+}
+.sidebar-item:hover{color:var(--text-muted);background:var(--surface);}
+.sidebar-item.active{
+  color:var(--primary-light);
+  background:var(--primary-glow);
+}
+.sidebar-item.active::before{
+  content:'';position:absolute;left:-12px;top:50%;transform:translateY(-50%);
+  width:3px;height:18px;border-radius:0 3px 3px 0;
+  background:var(--accent-gradient);
+}
+.sidebar-bottom{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.sidebar-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--surface-raised);
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;color:var(--text-muted);
+}
+
+/* ========== MAIN ========== */
+.main-area{margin-left:var(--sidebar-w);flex:1;min-height:100vh;}
+.topbar{
+  height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+  border-bottom:1px solid var(--border);
+  background:rgba(8,12,20,0.6);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:40;
+}
+.topbar-title{font-size:14px;font-weight:600;color:var(--text);}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.topbar-search{
+  padding:7px 14px;border-radius:var(--radius-sm);
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text-faint);font-size:12px;
+  display:flex;align-items:center;gap:6px;
+  cursor:pointer;
+}
+.topbar-search:hover{border-color:rgba(255,255,255,0.1);}
+.topbar-kbd{
+  font-size:10px;padding:1px 5px;border-radius:4px;
+  background:rgba(255,255,255,0.06);color:var(--text-faint);
+  font-family:monospace;
+}
+.content{padding:28px 32px;max-width:1100px;}
+
+/* ========== PAGE HEADER ========== */
+.page-header{margin-bottom:28px;}
+.page-header h1{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-0.3px;}
+.page-header p{font-size:13.5px;color:var(--text-muted);margin-top:3px;}
+.page-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+
+/* ========== GLASS CARDS ========== */
+.glass{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  transition:border-color 0.2s ease;
+}
+.glass:hover{border-color:rgba(255,255,255,0.1);}
+.glass-body{padding:22px 24px;}
+
+/* ========== STAT CARDS ========== */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+.stat-card{padding:22px 24px;}
+.stat-card.accent{
+  background:linear-gradient(135deg,rgba(6,182,212,0.12),rgba(16,185,129,0.08));
+  border:1px solid var(--border-accent);
+}
+.stat-label{
+  font-size:11px;font-weight:600;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.stat-value{
+  font-size:32px;font-weight:800;color:var(--text);
+  margin-top:6px;letter-spacing:-1px;
+}
+.stat-card.accent .stat-value{color:var(--primary-light);}
+.stat-desc{font-size:12px;color:var(--text-faint);margin-top:4px;}
+.stat-bar-bg{height:4px;background:rgba(255,255,255,0.06);border-radius:99px;margin-top:10px;overflow:hidden;}
+.stat-bar-fill{height:100%;border-radius:99px;background:var(--accent-gradient);}
+
+/* ========== SECTION ========== */
+.section-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;}
+.section-subtitle{font-size:12px;color:var(--text-faint);font-weight:400;margin-left:8px;}
+
+/* ========== BADGES ========== */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:99px;
+  font-size:11px;font-weight:600;
+}
+.badge-success{background:var(--success-bg);color:var(--success);border:1px solid var(--success-border);}
+.badge-warning{background:var(--warning-bg);color:var(--warning);border:1px solid var(--warning-border);}
+.badge-danger{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);}
+.badge-cyan{background:var(--primary-glow);color:var(--primary-light);border:1px solid var(--border-accent);}
+.badge-muted{background:var(--surface);color:var(--text-muted);border:1px solid var(--border);}
+
+/* ========== BUTTONS ========== */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:var(--radius-sm);
+  font-size:13px;font-weight:600;border:none;cursor:pointer;
+  transition:all 0.15s ease;font-family:inherit;
+}
+.btn-primary{
+  background:var(--accent-gradient);color:#fff;
+  box-shadow:0 0 16px rgba(6,182,212,0.15);
+}
+.btn-primary:hover{box-shadow:0 0 24px rgba(6,182,212,0.25);filter:brightness(1.1);}
+.btn-secondary{
+  background:var(--surface);color:var(--text-secondary);
+  border:1px solid var(--border);
+}
+.btn-secondary:hover{background:var(--surface-hover);border-color:rgba(255,255,255,0.1);}
+.btn:disabled{opacity:0.35;cursor:not-allowed;box-shadow:none;}
+
+/* ========== TABLE ========== */
+.table-wrap{
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  overflow:hidden;
+  background:var(--surface);
+}
+table{width:100%;border-collapse:collapse;}
+thead{background:rgba(255,255,255,0.02);}
+th{
+  padding:12px 16px;text-align:left;
+  font-size:11px;font-weight:600;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;
+  border-bottom:1px solid var(--border);
+}
+th.sortable{cursor:pointer;user-select:none;}
+th.sortable:hover{color:var(--text-secondary);}
+th.text-right{text-align:right;}
+th.text-center{text-align:center;}
+td{
+  padding:12px 16px;font-size:13px;color:var(--text-secondary);
+  white-space:nowrap;border-bottom:1px solid var(--border-light);
+}
+td.text-right{text-align:right;}
+td.text-center{text-align:center;}
+td.mono{font-family:'SF Mono','Cascadia Code','Fira Code',monospace;font-size:12px;color:var(--text-muted);}
+td.val{font-weight:600;color:var(--text);}
+tbody tr:hover{background:rgba(255,255,255,0.02);}
+tbody tr:last-child td{border-bottom:none;}
+
+/* ========== FILTER CHIPS ========== */
+.filter-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.filter-label{font-size:12px;font-weight:500;color:var(--text-muted);}
+.chip{
+  padding:5px 14px;border-radius:99px;font-size:12px;font-weight:500;
+  border:1px solid var(--border);cursor:pointer;transition:all 0.15s ease;
+  background:transparent;color:var(--text-muted);font-family:inherit;
+}
+.chip:hover{background:var(--surface);color:var(--text-secondary);}
+.chip.active{
+  background:var(--primary-glow);color:var(--primary-light);
+  border-color:var(--border-accent);
+}
+
+/* ========== PAGINATION ========== */
+.pagination{display:flex;align-items:center;justify-content:space-between;margin-top:16px;}
+.pagination-info{font-size:12px;color:var(--text-faint);}
+.pagination-btns{display:flex;gap:8px;}
+
+/* ========== UPLOAD ========== */
+.upload-zone{
+  border:2px dashed rgba(255,255,255,0.08);
+  border-radius:var(--radius);padding:56px 24px;text-align:center;
+  cursor:pointer;transition:all 0.2s ease;
+  background:var(--surface);
+}
+.upload-zone:hover{
+  border-color:var(--border-accent);
+  background:rgba(6,182,212,0.03);
+}
+.upload-icon{
+  width:52px;height:52px;border-radius:14px;
+  background:var(--primary-glow);color:var(--primary-light);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 18px;
+}
+.upload-zone h3{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.upload-zone p{font-size:13px;color:var(--text-muted);}
+.upload-zone .browse{color:var(--primary-light);font-weight:600;}
+.upload-hint{font-size:11px;color:var(--text-faint);margin-top:12px;}
+
+.file-row{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;border-radius:var(--radius);
+  background:var(--surface);border:1px solid var(--border);margin-top:16px;
+}
+.file-icon{
+  width:42px;height:42px;border-radius:10px;
+  background:var(--primary-glow);color:var(--primary-light);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.file-info{flex:1;}
+.file-name{font-size:13px;font-weight:600;color:var(--text);}
+.file-size{font-size:11px;color:var(--text-faint);}
+
+/* ========== ALERTS ========== */
+.alert{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:14px 18px;border-radius:var(--radius-sm);
+  font-size:13px;margin-top:16px;
+}
+.alert-success{background:var(--success-bg);border:1px solid var(--success-border);color:var(--success);}
+.alert-danger{background:var(--danger-bg);border:1px solid var(--danger-border);color:var(--danger);}
+.alert-icon{flex-shrink:0;margin-top:1px;}
+
+/* ========== RESULT CARDS ========== */
+.result-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  transition:border-color 0.2s;
+}
+.result-card:hover{border-color:rgba(255,255,255,0.1);}
+.result-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;border-bottom:1px solid var(--border-light);
+}
+.result-header h3{font-size:14px;font-weight:600;color:var(--text);}
+.result-header .date{font-size:11px;color:var(--text-faint);}
+.result-body{padding:20px 24px;}
+.result-section{margin-bottom:20px;}
+.result-section:last-child{margin-bottom:0;}
+.result-section-label{
+  font-size:10px;font-weight:600;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;
+}
+.result-summary{font-size:13.5px;color:var(--text-secondary);line-height:1.65;}
+
+/* ========== ANOMALY ========== */
+.anomaly-item{
+  padding:14px 16px;border:1px solid var(--warning-border);
+  border-radius:var(--radius-sm);background:var(--warning-bg);margin-bottom:8px;
+}
+.anomaly-item:last-child{margin-bottom:0;}
+.anomaly-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.anomaly-metric{
+  font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;
+  background:rgba(245,158,11,0.2);color:var(--warning);
+}
+.anomaly-record{font-size:11px;color:var(--text-faint);}
+.anomaly-value{margin-left:auto;font-size:13px;font-weight:700;color:var(--warning);}
+.anomaly-text{font-size:12.5px;color:var(--text-secondary);line-height:1.5;}
+
+/* ========== TOKENS ========== */
+.token-badges{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* ========== RECORD IDS ========== */
+.record-ids{display:flex;flex-wrap:wrap;gap:6px;}
+.record-id{
+  font-size:10px;font-family:'SF Mono',monospace;
+  padding:3px 8px;border-radius:4px;
+  background:var(--surface);color:var(--text-faint);border:1px solid var(--border);
+}
+.record-id.more{background:var(--primary-glow);color:var(--primary-light);border-color:var(--border-accent);}
+
+/* ========== TRIGGER CARD ========== */
+.trigger-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin-bottom:28px;
+}
+.trigger-info h2{font-size:15px;font-weight:600;color:var(--text);}
+.trigger-info p{font-size:13px;color:var(--text-muted);margin-top:2px;}
+
+/* ========== EMPTY STATE ========== */
+.empty-state{
+  text-align:center;padding:56px 24px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+}
+.empty-icon{
+  width:48px;height:48px;border-radius:12px;
+  background:var(--surface-raised);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;color:var(--text-faint);
+}
+.empty-state h3{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.empty-state p{font-size:13px;color:var(--text-muted);}
+
+/* ========== UTILITIES ========== */
+.hidden{display:none!important;}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .main-area{margin-left:0;}
+  .content{padding:20px 16px;}
+  .page-header-row{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ============================== SIDEBAR ============================== -->
+<aside class="sidebar">
+  <div class="sidebar-logo">IC</div>
+  <div class="sidebar-nav">
+    <button class="sidebar-item active" onclick="showPage('dashboard')" title="Dashboard">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    </button>
+    <button class="sidebar-item" onclick="showPage('records')" title="Records">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9h6m-6 4h6"/></svg>
+    </button>
+    <button class="sidebar-item" onclick="showPage('upload')" title="Upload">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+    </button>
+    <button class="sidebar-item" onclick="showPage('analysis')" title="Analysis">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+    </button>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="sidebar-avatar">K</div>
+  </div>
+</aside>
+
+<div class="main-area">
+
+<!-- ============================== TOPBAR ============================== -->
+<header class="topbar">
+  <span class="topbar-title" id="topbar-title">Dashboard</span>
+  <div class="topbar-right">
+    <div class="topbar-search">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Search...
+      <span class="topbar-kbd">&#8984;K</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============================== DASHBOARD ============================== -->
+<div id="page-dashboard" class="content">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+    <p>Overview of your operational records and analysis activity.</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="glass stat-card accent">
+      <div class="stat-label">Total Records</div>
+      <div class="stat-value">1,247</div>
+      <div class="stat-desc">Records loaded this session</div>
+    </div>
+    <div class="glass stat-card">
+      <div class="stat-label">Pending Analysis</div>
+      <div class="stat-value" style="color:var(--warning)">38</div>
+      <div class="stat-desc">Records not yet analysed</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:97%"></div></div>
+    </div>
+    <div class="glass stat-card">
+      <div class="stat-label">Analysed</div>
+      <div class="stat-value" style="color:var(--success)">1,209</div>
+      <div class="stat-desc">Successfully processed</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:97%"></div></div>
+    </div>
+  </div>
+
+  <div class="section-title">Latest Analysis Result</div>
+  <div class="result-card">
+    <div class="result-header">
+      <h3>Anomaly Detection Run #12</h3>
+      <span class="date">Mar 4, 2026, 3:42 PM</span>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-label">Summary</div>
+        <p class="result-summary">Analysis of 156 operational records completed. 3 anomalies detected across temperature and pressure metrics. Overall system health is within acceptable parameters with localized deviations in Sector B.</p>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Anomalies (3)</div>
+        <div class="anomaly-item">
+          <div class="anomaly-row">
+            <span class="anomaly-metric">temperature</span>
+            <span class="anomaly-record">Record: rec_0042</span>
+            <span class="anomaly-value">142.7</span>
+          </div>
+          <p class="anomaly-text">Temperature reading exceeds upper threshold by 18%. Potential sensor malfunction or localized heat event.</p>
+        </div>
+        <div class="anomaly-item">
+          <div class="anomaly-row">
+            <span class="anomaly-metric">pressure</span>
+            <span class="anomaly-record">Record: rec_0078</span>
+            <span class="anomaly-value">3.21</span>
+          </div>
+          <p class="anomaly-text">Pressure dropped below minimum operating range. Possible valve leak in Sector B pipeline.</p>
+        </div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Token Usage</div>
+        <div class="token-badges">
+          <span class="badge badge-cyan">Prompt: 4,821</span>
+          <span class="badge badge-muted">Completion: 1,206</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== RECORDS ============================== -->
+<div id="page-records" class="content hidden">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1>Records</h1>
+        <p>Operational records ingested from all sources.</p>
+      </div>
+      <button class="btn btn-secondary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <span class="filter-label">Source:</span>
+    <button class="chip active">All</button>
+    <button class="chip">CSV</button>
+    <button class="chip">Webhook</button>
+    <button class="chip">Poll</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Source</th>
+          <th>Entity ID</th>
+          <th>Metric Name</th>
+          <th class="text-right">Metric Value</th>
+          <th class="sortable">Timestamp <span style="color:var(--primary-light)">&darr;</span></th>
+          <th class="text-center">Status</th>
+          <th class="sortable">Ingested At <span style="color:var(--text-faint)">&updownarrow;</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>csv</td><td class="mono">ent_A1X9</td><td>temperature</td>
+          <td class="text-right val">98.4</td><td>Mar 4, 2026 2:30 PM</td>
+          <td class="text-center"><span class="badge badge-success">Analysed</span></td>
+          <td>Mar 4, 2026 2:35 PM</td>
+        </tr>
+        <tr>
+          <td>webhook</td><td class="mono">ent_B2K7</td><td>pressure</td>
+          <td class="text-right val">3.21</td><td>Mar 4, 2026 2:28 PM</td>
+          <td class="text-center"><span class="badge badge-success">Analysed</span></td>
+          <td>Mar 4, 2026 2:29 PM</td>
+        </tr>
+        <tr>
+          <td>csv</td><td class="mono">ent_C3M2</td><td>flow_rate</td>
+          <td class="text-right val">1,247</td><td>Mar 4, 2026 2:25 PM</td>
+          <td class="text-center"><span class="badge badge-warning">Pending</span></td>
+          <td>Mar 4, 2026 2:35 PM</td>
+        </tr>
+        <tr>
+          <td>poll</td><td class="mono">ent_D4P8</td><td>temperature</td>
+          <td class="text-right val">142.7</td><td>Mar 4, 2026 2:22 PM</td>
+          <td class="text-center"><span class="badge badge-success">Analysed</span></td>
+          <td>Mar 4, 2026 2:23 PM</td>
+        </tr>
+        <tr>
+          <td>csv</td><td class="mono">ent_E5Q1</td><td>humidity</td>
+          <td class="text-right val">67.3</td><td>Mar 4, 2026 2:18 PM</td>
+          <td class="text-center"><span class="badge badge-success">Analysed</span></td>
+          <td>Mar 4, 2026 2:35 PM</td>
+        </tr>
+        <tr>
+          <td>webhook</td><td class="mono">ent_F6R9</td><td>vibration</td>
+          <td class="text-right val">0.042</td><td>Mar 4, 2026 2:15 PM</td>
+          <td class="text-center"><span class="badge badge-warning">Pending</span></td>
+          <td>Mar 4, 2026 2:16 PM</td>
+        </tr>
+        <tr>
+          <td>poll</td><td class="mono">ent_G7S3</td><td>pressure</td>
+          <td class="text-right val">4.88</td><td>Mar 4, 2026 2:12 PM</td>
+          <td class="text-center"><span class="badge badge-success">Analysed</span></td>
+          <td>Mar 4, 2026 2:13 PM</td>
+        </tr>
+        <tr>
+          <td>csv</td><td class="mono">ent_H8T5</td><td>temperature</td>
+          <td class="text-right val">96.1</td><td>Mar 4, 2026 2:08 PM</td>
+          <td class="text-center"><span class="badge badge-success">Analysed</span></td>
+          <td>Mar 4, 2026 2:35 PM</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <span class="pagination-info">Page 1 &mdash; showing records 1&ndash;8 of 1,247</span>
+    <div class="pagination-btns">
+      <button class="btn btn-secondary" disabled>Previous</button>
+      <button class="btn btn-secondary">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== UPLOAD ============================== -->
+<div id="page-upload" class="content hidden">
+  <div class="page-header">
+    <h1>Upload CSV</h1>
+    <p>Import operational records from a CSV file.</p>
+  </div>
+
+  <div style="max-width:600px;">
+    <div class="upload-zone" id="upload-zone">
+      <div class="upload-icon">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+        </svg>
+      </div>
+      <h3>Drop your CSV file here</h3>
+      <p>or <span class="browse">browse</span> to choose a file</p>
+      <p class="upload-hint">.csv files only</p>
+    </div>
+
+    <div class="file-row" id="file-selected" style="display:none">
+      <div class="file-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">operations_march_2026.csv</div>
+        <div class="file-size">245 KB</div>
+      </div>
+      <button class="btn btn-primary" onclick="showUploadSuccess()">Upload</button>
+      <button class="btn btn-secondary" onclick="resetUpload()">Remove</button>
+    </div>
+
+    <div class="alert alert-success" id="upload-success" style="display:none">
+      <span class="alert-icon">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+      </span>
+      <div>
+        <strong>Successfully ingested 156 records.</strong>
+        <div style="font-size:12px;margin-top:2px;opacity:0.8">Records are now available for analysis.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== ANALYSIS ============================== -->
+<div id="page-analysis" class="content hidden">
+  <div class="page-header">
+    <h1>Analysis</h1>
+    <p>Run anomaly detection on unanalysed operational records.</p>
+  </div>
+
+  <div class="trigger-card glass">
+    <div class="trigger-info">
+      <h2>Run Analysis</h2>
+      <p>38 records pending analysis</p>
+    </div>
+    <button class="btn btn-primary">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+        <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      Run Analysis
+    </button>
+  </div>
+
+  <div class="section-title">Analysis Results<span class="section-subtitle">3 results</span></div>
+
+  <!-- Result 1 -->
+  <div class="result-card" style="margin-bottom:14px;">
+    <div class="result-header">
+      <h3>Analysis #3</h3>
+      <span class="date">Mar 4, 2026, 3:42 PM</span>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-label">Summary</div>
+        <p class="result-summary">Analysis of 156 records completed. 3 anomalies detected in temperature and pressure metrics. Sector B shows localized deviations requiring review.</p>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Anomalies (3)</div>
+        <div class="anomaly-item">
+          <div class="anomaly-row">
+            <span class="anomaly-metric">temperature</span>
+            <span class="anomaly-record">Record: rec_0042</span>
+            <span class="anomaly-value">142.7</span>
+          </div>
+          <p class="anomaly-text">Temperature reading exceeds upper threshold by 18%. Potential sensor malfunction or localized heat event.</p>
+        </div>
+        <div class="anomaly-item">
+          <div class="anomaly-row">
+            <span class="anomaly-metric">pressure</span>
+            <span class="anomaly-record">Record: rec_0078</span>
+            <span class="anomaly-value">3.21</span>
+          </div>
+          <p class="anomaly-text">Pressure dropped below minimum operating range. Possible valve leak in Sector B pipeline.</p>
+        </div>
+        <div class="anomaly-item">
+          <div class="anomaly-row">
+            <span class="anomaly-metric">temperature</span>
+            <span class="anomaly-record">Record: rec_0091</span>
+            <span class="anomaly-value">138.2</span>
+          </div>
+          <p class="anomaly-text">Elevated temperature reading in adjacent zone. Likely correlated with rec_0042 anomaly.</p>
+        </div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Token Usage</div>
+        <div class="token-badges">
+          <span class="badge badge-cyan">Prompt: 4,821</span>
+          <span class="badge badge-muted">Completion: 1,206</span>
+        </div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Records (156)</div>
+        <div class="record-ids">
+          <span class="record-id">rec_0001</span>
+          <span class="record-id">rec_0002</span>
+          <span class="record-id">rec_0003</span>
+          <span class="record-id">rec_0004</span>
+          <span class="record-id">rec_0005</span>
+          <span class="record-id more">+151 more</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result 2 -->
+  <div class="result-card" style="margin-bottom:14px;">
+    <div class="result-header">
+      <h3>Analysis #2</h3>
+      <span class="date">Mar 3, 2026, 11:15 AM</span>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-label">Summary</div>
+        <p class="result-summary">Analysis of 420 records completed. 1 anomaly detected in flow rate readings. All other metrics within normal operating ranges.</p>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Anomalies (1)</div>
+        <div class="anomaly-item">
+          <div class="anomaly-row">
+            <span class="anomaly-metric">flow_rate</span>
+            <span class="anomaly-record">Record: rec_0287</span>
+            <span class="anomaly-value">2,841</span>
+          </div>
+          <p class="anomaly-text">Flow rate spike detected, 2.3x above the rolling average. Likely caused by upstream valve adjustment at 10:48 AM.</p>
+        </div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Token Usage</div>
+        <div class="token-badges">
+          <span class="badge badge-cyan">Prompt: 12,440</span>
+          <span class="badge badge-muted">Completion: 2,891</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result 3 -->
+  <div class="result-card">
+    <div class="result-header">
+      <h3>Analysis #1</h3>
+      <span class="date">Mar 2, 2026, 9:30 AM</span>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-label">Summary</div>
+        <p class="result-summary">Initial analysis of 671 records completed. No anomalies detected. All metrics within expected operating parameters.</p>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Anomalies</div>
+        <p style="font-size:13px;color:var(--text-faint);font-style:italic;">No anomalies detected</p>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Token Usage</div>
+        <div class="token-badges">
+          <span class="badge badge-cyan">Prompt: 18,720</span>
+          <span class="badge badge-muted">Completion: 842</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main-area -->
+</div><!-- /shell -->
+
+<script>
+const pages=['dashboard','records','upload','analysis'];
+const titles={dashboard:'Dashboard',records:'Records',upload:'Upload CSV',analysis:'Analysis'};
+
+function showPage(page){
+  pages.forEach(p=>{
+    document.getElementById('page-'+p).classList.toggle('hidden',p!==page);
+  });
+  document.querySelectorAll('.sidebar-item').forEach((el,i)=>{
+    el.classList.toggle('active',pages[i]===page);
+  });
+  document.getElementById('topbar-title').textContent=titles[page];
+}
+
+// Upload interactions
+document.getElementById('upload-zone')?.addEventListener('click',function(){
+  this.style.display='none';
+  document.getElementById('file-selected').style.display='flex';
+});
+function showUploadSuccess(){
+  document.getElementById('file-selected').style.display='none';
+  document.getElementById('upload-success').style.display='flex';
+}
+function resetUpload(){
+  document.getElementById('file-selected').style.display='none';
+  document.getElementById('upload-zone').style.display='block';
+  document.getElementById('upload-success').style.display='none';
+}
+
+// Chip interactions
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click',function(){
+    this.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
